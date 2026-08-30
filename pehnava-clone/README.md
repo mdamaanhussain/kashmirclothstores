@@ -1,4 +1,4 @@
-# Pehnava Lawns — React Clone (MERN)
+# E-Commerce Website — React (MERN)
 
 Full responsive React clone of the Pehnava Lawns layout, with a MongoDB-Atlas-backed
 admin panel for CRUD, likes/wishlist, recently viewed, category filters, search,
