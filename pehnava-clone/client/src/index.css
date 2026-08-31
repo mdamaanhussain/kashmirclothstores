@@ -236,6 +236,60 @@ nav a:hover::after {
 .search-bar button:hover {
   background: #333;
 }
+.search-loading {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #666;
+  font-size: 13px;
+}
+
+.search-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e8e8e8;
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: searchSpin .7s linear infinite;
+}
+
+@keyframes searchSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.search-no-match {
+  margin: 8px 0 24px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.search-no-match p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.search-no-match span {
+  display: block;
+  margin-top: 2px;
+  color: #111;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.search-empty {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
+}
+
 
 /* ---------- HERO ---------- */
 /* =========================
@@ -1516,5 +1570,1075 @@ footer a:hover{color:#fff;text-decoration:underline}
 
   .faq-question {
     font-size: 13px;
+  }
+}
+
+
+/* =========================================================
+   FINAL RESPONSIVE PATCH
+   Prevents horizontal overflow on iPhone, Samsung S-series,
+   Pixel, small Android phones, tablets and narrow browsers.
+   ========================================================= */
+
+/* ---------- GLOBAL MOBILE SAFETY ---------- */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video,
+svg,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+input,
+textarea,
+select,
+button {
+  max-width: 100%;
+}
+
+main,
+header,
+footer,
+section,
+article,
+div {
+  min-width: 0;
+}
+
+/* Long text should never create a page wider than the viewport */
+p,
+h1,
+h2,
+h3,
+h4,
+a,
+span,
+td,
+th {
+  overflow-wrap: anywhere;
+}
+
+/* ---------- HEADER: TABLET + MOBILE ---------- */
+@media (max-width: 900px) {
+
+  header {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .top-header {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .mobile-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .top-header nav {
+    display: none;
+  }
+
+  .logo {
+    min-width: 0;
+    max-width: 100%;
+    text-align: center;
+    font-size: clamp(16px, 4.8vw, 19px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .logo small {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .actions {
+    min-width: 0;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .search-bar {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    margin: 0;
+  }
+
+  .search-box {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+    height: 40px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .search-bar button {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 40px;
+  }
+
+  .mobile-nav {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    right: 0;
+    padding: 14px 20px;
+  }
+
+  .announcement {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Never force desktop-sized content inside a narrow viewport */
+  .category-strip,
+  .products-section,
+  .collection-page,
+  .product-detail,
+  .policy-page,
+  .faq-page,
+  .story-page,
+  .contact-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .category-strip,
+  .products-section,
+  .collection-page,
+  .product-detail {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .pd-layout {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pd-info,
+  .pd-main-img {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .pd-thumbs {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pd-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Tables/forms inside admin should scroll instead of widening body */
+  .admin-dashboard,
+  .admin-form {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .admin-table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  /* Product rows */
+  .product-row {
+    min-width: 0;
+  }
+
+  .product {
+    min-width: 0;
+  }
+
+  .product-title,
+  .product-price {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 600px) {
+
+  body {
+    font-size: 14px;
+  }
+
+  .top-header {
+    padding: 9px 12px 10px;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .mobile-menu {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    font-size: 19px;
+  }
+
+  .logo {
+    font-size: clamp(15px, 5vw, 19px);
+    letter-spacing: .04em;
+  }
+
+  .logo small {
+    font-size: 7px;
+    letter-spacing: 1.6px;
+  }
+
+  .actions {
+    gap: 6px;
+    font-size: 17px;
+  }
+
+  .search-bar {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .search-box {
+    min-width: 0;
+    width: 0;
+    flex: 1 1 auto;
+    height: 40px;
+    padding: 0 11px;
+    font-size: 12px;
+  }
+
+  .search-bar button {
+    width: 42px;
+    flex: 0 0 42px;
+    height: 40px;
+  }
+
+  /* Mobile menu must use the complete viewport width */
+  .mobile-nav {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 80px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 8px 16px 30px;
+  }
+
+  .mobile-nav a {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+  }
+
+  /* Hero */
+  .hero {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 0;
+  }
+
+  .hero-img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 0;
+    object-fit: cover;
+    transform: none;
+  }
+
+  .hero-overlay {
+    left: 5%;
+    right: 5%;
+    bottom: 8%;
+    max-width: 90%;
+  }
+
+  .hero-overlay h1 {
+    font-size: clamp(24px, 7vw, 30px);
+  }
+
+  /* Categories */
+  .category-strip {
+    margin: 34px auto;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .category-strip h2 {
+    font-size: 22px;
+  }
+
+  .category-strip-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .category-strip-item,
+  .category-strip-img {
+    min-width: 0;
+  }
+
+  /* Products */
+  .products-section {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .section-head {
+    min-width: 0;
+    gap: 12px;
+  }
+
+  .section-head h2 {
+    min-width: 0;
+  }
+
+  .product-row,
+  .product-row.grid4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 8px;
+  }
+
+  .product-carousel .product-row {
+    display: flex;
+    gap: 10px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .product-carousel .product-row > * {
+    flex: 0 0 calc(50% - 5px);
+    min-width: calc(50% - 5px);
+    max-width: calc(50% - 5px);
+  }
+
+  .carousel-arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .carousel-left {
+    left: 2px;
+  }
+
+  .carousel-right {
+    right: 2px;
+  }
+
+  .product-img {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .product-title {
+    font-size: 13px;
+    line-height: 18px;
+    min-height: 36px;
+  }
+
+  .product-price {
+    font-size: 13px;
+  }
+
+  /* Collection/filter */
+  .collection-page {
+    padding: 16px 14px 40px;
+  }
+
+  .collection-title {
+    font-size: 25px;
+  }
+
+  .collection-layout {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Drawer should never exceed viewport */
+  .filter-sidebar {
+    width: min(86%, 320px) !important;
+    max-width: 320px;
+  }
+
+  .filter-scroll-body {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Product detail */
+  .product-detail {
+    padding: 16px 14px 40px;
+  }
+
+  .pd-layout {
+    gap: 24px;
+  }
+
+  .pd-main-img {
+    width: 100%;
+  }
+
+  .pd-info h1 {
+    font-size: 21px;
+    line-height: 1.3;
+  }
+
+  .pd-price {
+    font-size: 18px;
+  }
+
+  .pd-tabs {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .pd-tab-heads {
+    max-width: 100%;
+    overflow-x: auto;
+    gap: 18px;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .pd-tab-heads::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Policy / FAQ / Story */
+  .policy-page,
+  .faq-page,
+  .story-page,
+  .contact-page {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .policy-content,
+  .faq-content,
+  .story-content,
+  .contact-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .policy-content h1,
+  .faq-content h1,
+  .story-text h1,
+  .contact-header h1 {
+    font-size: clamp(27px, 8vw, 31px);
+    overflow-wrap: normal;
+  }
+
+  .faq-filter {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .faq-filter select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .faq-question {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .faq-answer {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  /* Contact */
+  .contact-cards {
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .contact-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .contact-card-content {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .contact-card-content p {
+    overflow-wrap: anywhere;
+  }
+
+  .contact-bottom {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Footer */
+  footer {
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: 1fr;
+    padding: 40px 18px;
+    overflow: hidden;
+  }
+
+  footer > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Toast */
+  .toast {
+    width: max-content;
+    max-width: calc(100vw - 28px);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ---------- VERY SMALL PHONES: iPhone SE / small Android ---------- */
+@media (max-width: 380px) {
+
+  .top-header {
+    padding-left: 9px;
+    padding-right: 9px;
+    gap: 6px;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+  }
+
+  .mobile-menu {
+    width: 32px;
+    min-width: 32px;
+  }
+
+  .logo {
+    font-size: 14px;
+  }
+
+  .logo small {
+    font-size: 6.5px;
+    letter-spacing: 1.2px;
+  }
+
+  .actions {
+    gap: 4px;
+    font-size: 16px;
+  }
+
+  .search-box {
+    height: 38px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .search-bar button {
+    width: 40px;
+    flex-basis: 40px;
+    height: 38px;
+  }
+
+  .category-strip,
+  .products-section,
+  .collection-page,
+  .product-detail,
+  .policy-page,
+  .faq-page,
+  .story-page,
+  .contact-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .product-row,
+  .product-row.grid4 {
+    gap: 10px 7px;
+  }
+
+  .product-title {
+    font-size: 12.5px;
+  }
+
+  .product-price {
+    font-size: 12.5px;
+  }
+}
+
+/* ---------- LANDSCAPE PHONES ---------- */
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .mobile-nav {
+    max-height: calc(100vh - 65px);
+  }
+
+  .hero-img {
+    max-height: 70vh;
+    object-fit: cover;
+  }
+}
+
+
+/* =========================================================
+   FINAL MOBILE LAYER FIX
+   Keeps mobile navigation / filter sidebar above hero images
+   and all page content.
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  /* Header itself must create the top stacking layer */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10000 !important;
+  }
+
+  /* Mobile navigation must stay above every page section */
+  .mobile-nav {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: min(86vw, 360px) !important;
+    max-width: 360px !important;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10002 !important;
+    background: #fff;
+    box-shadow: 12px 0 35px rgba(0, 0, 0, 0.14);
+  }
+
+  /* When the menu is opened, it stays above the hero */
+  .menu-open .mobile-nav {
+    z-index: 10002 !important;
+  }
+
+  /* Filter drawer + backdrop must also be above images */
+  .filter-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10001 !important;
+  }
+
+  .filter-sidebar {
+    z-index: 10002 !important;
+  }
+
+  /* Don't let hero / images create a competing visual layer */
+  .hero,
+  .hero picture,
+  .hero-img {
+    position: relative;
+    z-index: 0 !important;
+  }
+
+  main,
+  main section,
+  .products-section,
+  .category-strip,
+  .collection-page,
+  .product-detail {
+    position: relative;
+    z-index: 0;
+  }
+}
+
+/* Small screens: drawer remains comfortable without covering
+   the entire screen unnecessarily. */
+@media (max-width: 600px) {
+  .mobile-nav {
+    width: min(88vw, 340px) !important;
+    max-width: 340px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE POLISH
+   - Compact search bar
+   - Clean mobile header spacing
+   - Proper menu drawer sizing/layering
+   ========================================================= */
+
+@media (max-width: 900px) {
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10000 !important;
+  }
+
+  .top-header {
+    width: 100%;
+    max-width: 100%;
+    padding: 9px 12px;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .actions {
+    min-width: 0;
+    gap: 6px;
+  }
+
+  /* Compact search row */
+  .search-bar {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px 8px;
+    margin: 0;
+  }
+
+  .search-box {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+    height: 36px;
+    padding: 0 11px;
+    font-size: 12px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .search-bar button {
+    width: 40px;
+    min-width: 40px;
+    height: 36px;
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* Mobile drawer */
+  .mobile-nav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: min(82vw, 320px) !important;
+    max-width: 320px !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    padding: 62px 16px 28px !important;
+    background: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10002 !important;
+    box-shadow: 10px 0 30px rgba(0,0,0,.12);
+  }
+
+  .mobile-nav a {
+    width: 100%;
+    padding: 16px 4px;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+  }
+
+  .filter-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10001 !important;
+  }
+
+  .filter-sidebar {
+    z-index: 10002 !important;
+  }
+
+  .hero,
+  .hero picture,
+  .hero-img,
+  main,
+  main section {
+    position: relative;
+    z-index: 0 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-header {
+    padding: 8px 10px 8px;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  .mobile-menu {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .logo {
+    font-size: clamp(15px, 4.8vw, 19px);
+  }
+
+  .actions {
+    gap: 5px;
+    font-size: 16px;
+  }
+
+  .search-bar {
+    padding: 0 5px 7px;
+  }
+
+  .search-box {
+    height: 35px;
+    padding: 0 10px;
+    font-size: 11.5px;
+  }
+
+  .search-bar button {
+    width: 38px;
+    min-width: 38px;
+    height: 35px;
+  }
+
+  .mobile-nav {
+    width: min(84vw, 315px) !important;
+    max-width: 315px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .top-header {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .logo {
+    font-size: 14px;
+  }
+
+  .search-bar {
+    padding-left: 3px;
+    padding-right: 3px;
+  }
+
+  .search-box {
+    height: 34px;
+  }
+
+  .search-bar button {
+    width: 37px;
+    min-width: 37px;
+    height: 34px;
+  }
+
+  .mobile-nav {
+    width: min(86vw, 300px) !important;
+    max-width: 300px !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE MENU — FILTER STYLE HEADER + CLOSE BUTTON
+   Matches the existing Filter drawer appearance.
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  /* Full mobile menu drawer */
+  .mobile-nav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: min(86vw, 320px) !important;
+    max-width: 320px !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    padding: 0 16px 28px !important;
+    background: #fff !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    z-index: 10002 !important;
+    box-shadow: 10px 0 30px rgba(0,0,0,.12);
+  }
+
+  /* Filter-style top header inside menu */
+  .mobile-nav-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+    margin: 0 -16px 14px;
+    padding: 0 18px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+
+  .mobile-nav-header h3,
+  .mobile-nav-header .mobile-nav-title {
+    margin: 0 !important;
+    font-size: 18px !important;
+    line-height: 1;
+    font-weight: 500;
+    color: #111;
+  }
+
+  /* X button — same visual language as Filter close */
+  .mobile-nav-close,
+  .mobile-menu-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #111;
+    font-size: 27px;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background .18s ease, transform .18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-close:hover,
+  .mobile-menu-close:hover {
+    background: #f5f5f5;
+  }
+
+  .mobile-nav-close:active,
+  .mobile-menu-close:active {
+    transform: scale(.94);
+  }
+
+  /* Menu links sit below the header exactly like Filter content */
+  .mobile-nav a {
+    display: block;
+    width: 100%;
+    padding: 16px 4px;
+    margin: 0;
+    border-bottom: 1px solid #eee;
+    color: #111;
+    font-size: 13px;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+
+  .mobile-nav a:last-child {
+    border-bottom: 0;
+  }
+
+  /* Backdrop: tap anywhere outside the menu to close */
+  .mobile-menu-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.38);
+    z-index: 10001 !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Menu content remains above the backdrop */
+  .mobile-nav,
+  .mobile-nav-header {
+    isolation: isolate;
+  }
+
+  /* Prevent page scrolling while menu is open */
+  body.menu-open {
+    overflow: hidden;
+    touch-action: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-nav {
+    width: min(86vw, 305px) !important;
+    max-width: 305px !important;
+  }
+
+  .mobile-nav-header {
+    height: 56px;
+  }
+
+  .mobile-nav-header h3,
+  .mobile-nav-header .mobile-nav-title {
+    font-size: 17px !important;
+  }
+
+  .mobile-nav-close,
+  .mobile-menu-close {
+    width: 36px;
+    height: 36px;
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-nav {
+    width: min(88vw, 295px) !important;
+    max-width: 295px !important;
+  }
+
+  .mobile-nav-header {
+    margin-left: -14px;
+    margin-right: -14px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
