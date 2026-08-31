@@ -9,11 +9,10 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || "*",
-  })
-);
+app.use(cors({
+  origin: "*",
+  credentials: false
+}));
 
 app.use("/api/products", productRoutes);
 app.use("/api/admin", adminRoutes);
