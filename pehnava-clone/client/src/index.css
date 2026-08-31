@@ -2642,3 +2642,491 @@ th {
     padding-right: 16px;
   }
 }
+
+/* =========================================================
+   FINAL BALANCED MOBILE SEARCH
+   250px–360px: search stays compact but usable,
+   while the KASHMIR logo always remains visible.
+   Add at the VERY END of index.css.
+   ========================================================= */
+
+@media (min-width: 250px) and (max-width: 360px) {
+
+  .top-header {
+    display: grid !important;
+    grid-template-columns: 31px minmax(95px, 1fr) 82px !important;
+    column-gap: 6px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 7px 7px !important;
+    overflow: hidden !important;
+  }
+
+  .mobile-menu {
+    width: 31px !important;
+    min-width: 31px !important;
+    height: 31px !important;
+    padding: 0 !important;
+    font-size: 18px !important;
+  }
+
+  .logo {
+    min-width: 95px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    font-size: 13.5px !important;
+    letter-spacing: .02em !important;
+    line-height: 1.05 !important;
+  }
+
+  .logo small {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    margin-top: 2px !important;
+    font-size: 5.8px !important;
+    letter-spacing: .8px !important;
+  }
+
+  .actions {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 3px !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .search-bar {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
+  }
+
+  .search-box {
+    width: 0 !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    height: 31px !important;
+    padding: 0 7px !important;
+    font-size: 9.5px !important;
+    border-radius: 3px 0 0 3px !important;
+    overflow: hidden !important;
+  }
+
+  .search-box::placeholder {
+    font-size: 9px !important;
+  }
+
+  .search-bar button {
+    width: 32px !important;
+    min-width: 32px !important;
+    flex: 0 0 32px !important;
+    height: 31px !important;
+    padding: 0 !important;
+    border-radius: 0 3px 3px 0 !important;
+  }
+
+  .search-bar button svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .wishlist-btn {
+    width: 13px !important;
+    min-width: 13px !important;
+    flex: 0 0 13px !important;
+    font-size: 13px !important;
+  }
+
+  .wishlist-btn sup {
+    font-size: 7px !important;
+    top: -5px !important;
+    right: -6px !important;
+    padding: 1px 3px !important;
+  }
+}
+
+/* 250px–300px: tighten controls a little more */
+@media (min-width: 250px) and (max-width: 300px) {
+
+  .top-header {
+    grid-template-columns: 29px minmax(88px, 1fr) 76px !important;
+    column-gap: 5px !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+
+  .mobile-menu {
+    width: 29px !important;
+    min-width: 29px !important;
+    height: 29px !important;
+  }
+
+  .logo {
+    min-width: 88px !important;
+    font-size: 12px !important;
+  }
+
+  .logo small {
+    font-size: 5.2px !important;
+    letter-spacing: .65px !important;
+  }
+
+  .actions {
+    width: 76px !important;
+    min-width: 76px !important;
+    max-width: 76px !important;
+  }
+
+  .search-box {
+    height: 30px !important;
+    padding: 0 6px !important;
+    font-size: 9px !important;
+  }
+
+  .search-box::placeholder {
+    font-size: 8px !important;
+  }
+
+  .search-bar button {
+    width: 31px !important;
+    min-width: 31px !important;
+    flex-basis: 31px !important;
+    height: 30px !important;
+  }
+}
+/* =========================================================
+   MOBILE SEARCH - BETTER BALANCED FIT
+   250px–360px
+   More usable search field without covering the logo.
+   Paste this at the VERY END of index.css.
+   ========================================================= */
+
+@media (min-width: 301px) and (max-width: 360px) {
+
+  .top-header {
+    display: grid !important;
+    grid-template-columns: 31px minmax(92px, 1fr) auto !important;
+    column-gap: 6px !important;
+    padding: 7px 7px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .mobile-menu {
+    width: 31px !important;
+    min-width: 31px !important;
+    height: 31px !important;
+    padding: 0 !important;
+    font-size: 18px !important;
+  }
+
+  .logo {
+    min-width: 92px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    font-size: 13.5px !important;
+    letter-spacing: .02em !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .logo small {
+    font-size: 5.8px !important;
+    letter-spacing: .8px !important;
+  }
+
+  /* Give search noticeably more room */
+  .actions {
+    width: clamp(108px, 31vw, 116px) !important;
+    min-width: 108px !important;
+    max-width: 116px !important;
+    gap: 3px !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    overflow: hidden !important;
+  }
+
+  .search-bar {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
+    display: flex !important;
+  }
+
+  .search-box {
+    min-width: 0 !important;
+    width: 0 !important;
+    flex: 1 1 auto !important;
+    height: 32px !important;
+    padding: 0 8px !important;
+    font-size: 10px !important;
+    border-radius: 3px 0 0 3px !important;
+  }
+
+  .search-box::placeholder {
+    font-size: 9.5px !important;
+  }
+
+  .search-bar button {
+    width: 34px !important;
+    min-width: 34px !important;
+    flex: 0 0 34px !important;
+    height: 32px !important;
+  }
+
+  .search-bar button svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .wishlist-btn {
+    width: 13px !important;
+    min-width: 13px !important;
+    flex: 0 0 13px !important;
+    font-size: 13px !important;
+  }
+}
+/* =========================================================
+   MOBILE 250px–360px — BALANCED HEADER
+   Layout:
+   ☰  |  KASHMIR CLOTH STORES  |  [Search 🔍] ♥
+   Search gets useful width without covering/squeezing logo.
+   Add this block at the VERY END of index.css.
+   ========================================================= */
+
+@media (min-width: 250px) and (max-width: 360px) {
+
+  .top-header {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    display: grid !important;
+    grid-template-columns: 30px minmax(96px, 1fr) minmax(92px, 36%) !important;
+    align-items: center !important;
+
+    column-gap: 6px !important;
+    padding: 7px 7px !important;
+    overflow: hidden !important;
+  }
+
+  /* Hamburger */
+  .mobile-menu {
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+  }
+
+  /* Brand */
+  .logo {
+    width: 100% !important;
+    min-width: 96px !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    display: block !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+
+    font-size: clamp(13px, 4vw, 15px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: .025em !important;
+  }
+
+  .logo small {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin-top: 2px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+
+    font-size: clamp(5px, 1.7vw, 6.5px) !important;
+    letter-spacing: .8px !important;
+    line-height: 1 !important;
+  }
+
+  /* Right controls */
+  .actions {
+    width: 100% !important;
+    min-width: 92px !important;
+    max-width: 100% !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    gap: 3px !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Search form */
+  .search-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
+  }
+
+  .search-box {
+    width: 0 !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+
+    height: 32px !important;
+    padding: 0 8px !important;
+
+    font-size: 10px !important;
+    line-height: 1 !important;
+
+    border-radius: 3px 0 0 3px !important;
+    overflow: hidden !important;
+  }
+
+  .search-box::placeholder {
+    font-size: 9px !important;
+  }
+
+  .search-bar button {
+    width: 33px !important;
+    min-width: 33px !important;
+    height: 32px !important;
+    flex: 0 0 33px !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 0 3px 3px 0 !important;
+  }
+
+  .search-bar button svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  /* Wishlist */
+  .wishlist-btn {
+    width: 13px !important;
+    min-width: 13px !important;
+    flex: 0 0 13px !important;
+
+    font-size: 13px !important;
+    line-height: 1 !important;
+  }
+
+  .wishlist-btn sup {
+    font-size: 7px !important;
+    top: -5px !important;
+    right: -6px !important;
+    padding: 1px 3px !important;
+  }
+}
+/* =========================================================
+   250px–300px — slightly tighter
+   ========================================================= */
+
+@media (min-width: 250px) and (max-width: 360px) {
+
+  .top-header {
+    grid-template-columns: 29px auto minmax(82px, 1fr) !important;
+    column-gap: 6px !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+
+  .mobile-menu {
+    width: 29px !important;
+    min-width: 29px !important;
+    height: 29px !important;
+    font-size: 17px !important;
+  }
+
+  .logo {
+    min-width: 0 !important;
+    width: auto !important;
+    font-size: 15px !important;
+    letter-spacing: .025em !important;
+    text-align: center !important;
+  }
+
+  .logo small {
+    font-size: 6.5px !important;
+    letter-spacing: .7px !important;
+  }
+
+  .actions {
+    margin-left: 0 !important;
+    padding-left: 10px !important;
+    min-width: 82px !important;
+  }
+
+  .search-box {
+    height: 30px !important;
+    padding: 0 6px !important;
+    font-size: 9px !important;
+  }
+
+  .search-box::placeholder {
+    font-size: 8px !important;
+  }
+
+  .search-bar button {
+    width: 31px !important;
+    min-width: 31px !important;
+    flex-basis: 31px !important;
+    height: 30px !important;
+  }
+
+  .search-bar button svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .wishlist-btn {
+    width: 12px !important;
+    min-width: 12px !important;
+    flex-basis: 12px !important;
+    font-size: 12px !important;
+  }
+}
