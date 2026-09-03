@@ -136,6 +136,7 @@ export default function Header() {
             ♥
             {likes.length > 0 && <sup>{likes.length}</sup>}
           </Link>
+          <Link to="/account" className="account-link">Account</Link>
         </div>
       </div>
 
@@ -175,6 +176,9 @@ export default function Header() {
             {c.label}
           </Link>
         ))}
+        <Link to="/account" onClick={closeMenu}>
+          My account
+        </Link>
       </aside>
     </header>
   );

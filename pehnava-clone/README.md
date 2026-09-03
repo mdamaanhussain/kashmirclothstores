@@ -1,12 +1,12 @@
 # E-Commerce Website — React (MERN)
 
-Full responsive React clone of the Pehnava Lawns layout, with a MongoDB-Atlas-backed
+Full responsive React e-commerce app for Kashmir Cloth Stores, with a MongoDB-Atlas-backed
 admin panel for CRUD, likes/wishlist, recently viewed, category filters, search,
 share, and an Instagram "Buy It Now" redirect.
 
 ## Folder structure
 ```
-pehnava-clone/
+kashmir-cloth-stores/
   server/   -> Express + Mongoose API (connects to MongoDB Atlas)
   client/   -> React + Vite frontend
 ```

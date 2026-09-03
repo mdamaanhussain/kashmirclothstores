@@ -15,6 +15,7 @@ import RefundPolicy from "./pages/RefundPolicy.jsx";
 import FAQ from "./pages/FAQ.jsx";
 import OurStory from "./pages/OurStory.jsx";
 import Contact from "./pages/Contact.jsx";
+import Account from "./pages/Account.jsx";
 export default function App() {
   return (
     <ToastProvider>
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/likes" element={<Likes />} />
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/account" element={<Account />} />
         <Route
   path="/shipping-and-delivery-policy"
   element={<ShippingPolicy />}

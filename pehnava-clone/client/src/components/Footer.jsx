@@ -16,9 +16,6 @@ export default function Footer() {
           Beautiful stitched & unstitched lawn suits for women.
         </p>
 
-        <div>
-          <Link to="/admin">Admin Panel</Link>
-        </div>
       </div>
 
       {/* SHOP */}

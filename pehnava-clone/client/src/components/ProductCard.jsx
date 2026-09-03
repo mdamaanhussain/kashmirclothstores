@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useLikes } from "../context/LikesContext.jsx";
 import { useToast } from "./Toast.jsx";
 import { INSTAGRAM_USERNAME } from "../api.js";
+import { Heart, Share2 } from "lucide-react";
 
 export default function ProductCard({ product, showBuyNow = true }) {
   const { isLiked, toggleLike } = useLikes();
@@ -52,20 +53,21 @@ ${product.colors?.length
   return (
     <div className="product">
       <Link to={`/products/${product.slug}`} className="product-img">
+        {product.soldOut && <div className="stock-overlay"><strong>Out of stock</strong><span>Currently unavailable</span></div>}
         {product.soldOut && <span className="badge sold-out">SOLD OUT</span>}
         {!product.soldOut && product.isNew && <span className="badge new">NEW</span>}
         <img src={product.images?.[0]} alt={product.title} loading="lazy" />
         <div className="size-overlay">{sizeLabel}</div>
         <div className="card-icons">
           <button title="Share" onClick={handleShare}>
-            ⤴
+            <Share2 size={16} strokeWidth={1.8} />
           </button>
           <button
             title={liked ? "Unlike" : "Like"}
             className={liked ? "liked" : ""}
             onClick={handleLike}
           >
-            {liked ? "♥" : "♡"}
+            <Heart size={16} fill={liked ? "currentColor" : "none"} strokeWidth={1.8} />
           </button>
         </div>
       </Link>
@@ -74,7 +76,9 @@ ${product.colors?.length
       </Link>
       <p className="product-price">
         {product.categories?.includes("from-price") ? "From " : ""}Rs.{" "}
-        {product.price.toLocaleString("en-IN")}.00
+        {(product.salePrice ?? product.price).toLocaleString("en-IN")}.00
+        {product.discount > 0 && <del> Rs. {product.price.toLocaleString("en-IN")}</del>}
+        {product.discount > 0 && <span className="discount-badge">{product.discount}% OFF</span>}
       </p>
       {product.colors?.length > 0 && (
         <div className="swatches">

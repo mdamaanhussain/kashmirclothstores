@@ -45,7 +45,7 @@ export default function Contact() {
 
           {/* Email */}
           <a
-            href="mailto:kashmir.clothstores04@gmail.com"
+            href="mailto:amaanhussain786pr@gmail.com"
             className="contact-card"
           >
             <div className="contact-icon email-icon">

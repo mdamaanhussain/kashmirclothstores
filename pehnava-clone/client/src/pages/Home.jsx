@@ -23,7 +23,7 @@ export default function Home() {
   // =========================
   const heroImages = [
     "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788091504/Pehnava-Banner-lawns_xbl4up.webp",
-    "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788093800/webfront_dn9jhb.png",
+    "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788438230/ChatGPT_Image_Aug_30_2026_06_02_04_PM_u88fhz.png",
   ];
 
   const mobileHeroImages = [

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 
 const RecentlyViewedContext = createContext(null);
-const KEY = "pehnava_recently_viewed";
+const KEY = "kashmir_cloth_stores_recently_viewed";
 const MAX = 8;
 
 export function RecentlyViewedProvider({ children }) {

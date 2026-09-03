@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 const LikesContext = createContext(null);
-const KEY = "pehnava_likes";
+const KEY = "kashmir_cloth_stores_likes";
 
 export function LikesProvider({ children }) {
   const [likes, setLikes] = useState(() => {
