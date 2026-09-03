@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 const allowedOrigins = new Set([
   "http://localhost:5173",
-  "http://127.0.0.1:5173",
+  "https://kashmirclothstores.vercel.app",
   ...(process.env.CLIENT_ORIGIN || "").split(",").map((origin) => origin.trim()).filter(Boolean),
 ]);
 app.use(cors({
