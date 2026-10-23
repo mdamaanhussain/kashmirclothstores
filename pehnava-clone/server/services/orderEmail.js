@@ -1,6 +1,39 @@
 const COMPANY_LOGO_URL =
   "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788449875/IMG_20260903_210034_ru7fpz.png";
 
+function getPublicAppBaseUrl() {
+  const configuredOrigins = (process.env.CLIENT_ORIGIN || "").split(",");
+
+  for (const origin of configuredOrigins) {
+    try {
+      const url = new URL(origin.trim());
+      if (
+        ["http:", "https:"].includes(url.protocol) &&
+        !url.username &&
+        !url.password &&
+        !["localhost", "127.0.0.1", "::1"].includes(url.hostname)
+      ) {
+        return url.origin;
+      }
+    } catch {
+      // Ignore invalid configured origins and try the next one.
+    }
+  }
+
+  return "https://kashmirclothstores.vercel.app";
+}
+
+function getSafeImageUrl(value) {
+  if (typeof value !== "string" || !value.trim()) return "";
+
+  try {
+    const url = new URL(value.trim());
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
 function escapeHtml(value = "") {
   return String(value).replace(/[&<>"']/g, (character) => ({
     "&": "&amp;",
@@ -19,6 +52,7 @@ function formatRs(value) {
 }
 
 export function buildOrderEmailHtml(order) {
+  const publicAppBaseUrl = getPublicAppBaseUrl();
   const address = order.shippingAddress || {};
   const customerName =
     address.name ||
@@ -28,6 +62,8 @@ export function buildOrderEmailHtml(order) {
   const orderId = String(order._id || "")
     .slice(-8)
     .toUpperCase();
+  const carrier = escapeHtml(order.carrier || "");
+  const trackingNumber = escapeHtml(order.trackingNumber || "");
 
   const items = Array.isArray(order.items)
     ? order.items
@@ -81,6 +117,15 @@ export function buildOrderEmailHtml(order) {
       const lineTotal =
         price * quantity;
 
+      const productSlug =
+        item.slug ||
+        item.productSlug ||
+        item.product?.slug;
+      const productHref = productSlug
+        ? `${publicAppBaseUrl}/products/${encodeURIComponent(String(productSlug))}`
+        : "";
+      const imageUrl = getSafeImageUrl(item.image);
+
       const variant = [
         item.color
           ? escapeHtml(item.color)
@@ -96,49 +141,80 @@ export function buildOrderEmailHtml(order) {
         <tr>
           <td
             style="
-              padding:18px 0;
-              border-bottom:1px solid #eeeeee;
+              padding:10px 0;
             "
           >
             <table
+              class="email-item"
               width="100%"
               cellpadding="0"
               cellspacing="0"
               border="0"
+              style="
+                background:#fbfaf8;
+                border:1px solid #eee9e3;
+                border-radius:9px;
+              "
             >
               <tr>
 
                 <!-- PRODUCT IMAGE -->
                 <td
-                  width="72"
+                  class="email-item-image"
+                  width="88"
                   valign="top"
+                  style="padding:12px 0 12px 12px;"
                 >
-                  <img
-                    src="${escapeHtml(
-                      item.image ||
-                      "https://placehold.co/96x120?text=Product"
-                    )}"
-                    width="64"
-                    height="80"
-                    alt="${escapeHtml(
-                      item.title || "Product"
-                    )}"
-                    style="
-                      display:block;
-                      width:64px;
-                      height:80px;
-                      object-fit:cover;
-                      border-radius:7px;
-                      background:#f7f7f7;
-                      border:0;
-                    "
-                  >
+                  ${
+                    imageUrl
+                      ? `
+                        ${
+                          productHref
+                            ? `<a href="${escapeHtml(productHref)}" style="display:block;text-decoration:none;">`
+                            : ""
+                        }
+                          <img
+                            src="${escapeHtml(imageUrl)}"
+                            width="64"
+                            height="80"
+                            alt="${escapeHtml(item.title || "Product")}"
+                            style="
+                              display:block;
+                              width:64px;
+                              height:80px;
+                              object-fit:cover;
+                              border-radius:7px;
+                              background:#f1eee9;
+                              border:0;
+                            "
+                          >
+                        ${productHref ? "</a>" : ""}
+                      `
+                      : `
+                        <span
+                          role="img"
+                          aria-label="Image unavailable"
+                          style="
+                            display:block;
+                            width:64px;
+                            height:80px;
+                            border-radius:7px;
+                            background:#f1eee9;
+                            color:#8b8178;
+                            font-size:10px;
+                            line-height:80px;
+                            text-align:center;
+                          "
+                        >No image</span>
+                      `
+                  }
                 </td>
 
                 <!-- PRODUCT DETAILS -->
                 <td
+                  class="email-item-details"
                   valign="top"
-                  style="padding-left:15px;"
+                  style="padding:14px 8px 12px 14px;"
                 >
                   <p
                     style="
@@ -185,10 +261,11 @@ export function buildOrderEmailHtml(order) {
 
                 <!-- PRICE -->
                 <td
+                  class="email-item-price"
                   width="95"
                   valign="top"
                   align="right"
-                  style="padding-left:10px;"
+                  style="padding:14px 12px 12px 8px;"
                 >
                   <p
                     style="
@@ -238,6 +315,55 @@ export function buildOrderEmailHtml(order) {
     content="width=device-width, initial-scale=1.0"
   >
 
+  <style>
+    @media only screen and (max-width: 600px) {
+      .email-outer {
+        padding:16px 8px !important;
+      }
+      .email-container {
+        border-radius:0 !important;
+      }
+      .email-gutter {
+        padding-left:18px !important;
+        padding-right:18px !important;
+      }
+      .email-intro {
+        padding-top:18px !important;
+        padding-bottom:22px !important;
+      }
+      .email-intro h2 {
+        font-size:21px !important;
+      }
+      .email-item-image {
+        width:76px !important;
+        padding-left:8px !important;
+      }
+      .email-item-image img,
+      .email-item-image span {
+        width:56px !important;
+        height:70px !important;
+      }
+      .email-item-image span {
+        line-height:70px !important;
+      }
+      .email-item-details {
+        padding-left:8px !important;
+      }
+      .email-item-price {
+        width:82px !important;
+        padding-right:8px !important;
+      }
+      .email-customer-column {
+        display:block !important;
+        width:100% !important;
+        padding:0 0 18px !important;
+      }
+      .email-customer-column:last-child {
+        padding-bottom:0 !important;
+      }
+    }
+  </style>
+
   <title>
     Kashmir Cloth Stores - Order #${escapeHtml(orderId)}
   </title>
@@ -254,6 +380,7 @@ export function buildOrderEmailHtml(order) {
 >
 
   <table
+    class="email-outer"
     width="100%"
     cellpadding="0"
     cellspacing="0"
@@ -269,6 +396,7 @@ export function buildOrderEmailHtml(order) {
       <td align="center">
 
         <table
+          class="email-container"
           width="600"
           cellpadding="0"
           cellspacing="0"
@@ -346,6 +474,7 @@ export function buildOrderEmailHtml(order) {
           <tr>
 
             <td
+              class="email-intro"
               style="
                 padding:20px 40px 28px;
                 text-align:center;
@@ -383,14 +512,57 @@ export function buildOrderEmailHtml(order) {
 
           </tr>
 
+          ${
+            order.editedAt
+              ? `
+                <tr>
+                  <td style="padding:0 40px 18px;text-align:center;color:#806541;font-size:12px;line-height:1.5;">
+                    Order information updated by our team on ${escapeHtml(new Date(order.editedAt).toLocaleString("en-IN"))}.
+                  </td>
+                </tr>
+              `
+              : ""
+          }
+
+          ${
+            order.status === "cancelled_refund" || order.status === "cancelled"
+              ? `
+                <tr>
+                  <td style="padding:0 40px 18px;text-align:center;color:#806541;font-size:13px;line-height:1.5;">
+                    <strong>Order status: Cancelled / Refund.</strong> Any eligible payment refund is processed manually; this status does not issue an automatic refund.
+                  </td>
+                </tr>
+              `
+              : ""
+          }
 
           <!-- =========================
                ORDER SUMMARY
           ========================== -->
 
+          ${
+            carrier || trackingNumber
+              ? `
+                <tr>
+                  <td class="email-gutter" style="padding:0 40px 18px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f7f4ef;border:1px solid #e9e1d7;border-radius:8px;">
+                      <tr><td style="padding:15px 18px;font-size:13px;line-height:1.6;color:#51483e;">
+                        <strong style="display:block;margin-bottom:4px;color:#29231d;">Shipment tracking</strong>
+                        ${carrier ? `<span>Tracking Carrier: <strong>${carrier}</strong></span>` : ""}
+                        ${carrier && trackingNumber ? "<br>" : ""}
+                        ${trackingNumber ? `<span>Tracking Number: <strong>${trackingNumber}</strong></span>` : ""}
+                      </td></tr>
+                    </table>
+                  </td>
+                </tr>
+              `
+              : ""
+          }
+
           <tr>
 
             <td
+              class="email-gutter"
               style="
                 padding:26px 40px 10px;
                 border-top:1px solid #eeeeee;
@@ -416,6 +588,7 @@ export function buildOrderEmailHtml(order) {
           <tr>
 
             <td
+              class="email-gutter"
               style="
                 padding:0 40px;
               "
@@ -459,6 +632,7 @@ export function buildOrderEmailHtml(order) {
           <tr>
 
             <td
+              class="email-gutter"
               style="
                 padding:18px 40px 24px;
                 border-top:1px solid #eeeeee;
@@ -556,6 +730,7 @@ export function buildOrderEmailHtml(order) {
           <tr>
 
             <td
+              class="email-gutter"
               style="
                 padding:24px 40px;
                 border-top:1px solid #eeeeee;
@@ -586,6 +761,7 @@ export function buildOrderEmailHtml(order) {
                   <!-- SHIPPING ADDRESS -->
 
                   <td
+                    class="email-customer-column"
                     width="50%"
                     valign="top"
                     style="
@@ -648,6 +824,7 @@ export function buildOrderEmailHtml(order) {
                   <!-- PAYMENT -->
 
                   <td
+                    class="email-customer-column"
                     width="50%"
                     valign="top"
                     style="

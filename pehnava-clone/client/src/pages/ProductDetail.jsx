@@ -1,18 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useSearchParams, Link } from "react-router-dom";
 import { api, INSTAGRAM_USERNAME } from "../api.js";
 import { useLikes } from "../context/LikesContext.jsx";
 import { useRecentlyViewed } from "../context/RecentlyViewedContext.jsx";
 import { useToast } from "../components/Toast.jsx";
 import ProductCard from "../components/ProductCard.jsx";
-import { Heart, Share2, Minus, Plus } from "lucide-react";
+import HomeFeatures from "../components/HomeFeatures.jsx";
+import LoadingImage from "../components/LoadingImage.jsx";
+import { LoadingState } from "../components/LoadingState.jsx";
+import { Heart, Share2, Minus, Plus, ChevronRight } from "lucide-react";
 
 export default function ProductDetail() {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
   const [product, setProduct] = useState(null);
   const [activeImg, setActiveImg] = useState(0);
   const [tab, setTab] = useState("description");
   const [recentProducts, setRecentProducts] = useState([]);
+  const [homepageContent, setHomepageContent] = useState({
+    influencerPicks: [],
+    instagramPosts: [],
+    reviews: [],
+  });
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -34,14 +43,16 @@ export default function ProductDetail() {
     api.get(`/products/${slug}`).then((res) => {
       setProduct(res.data);
       setActiveImg(0);
-      const firstColor = res.data.colors?.find((color) => (res.data.variantStock?.length ? res.data.variantStock.some((variant) => variant.color === color.name && variant.stock > 0) : color.stock > 0))?.name || "";
+      const requestedColor = searchParams.get("color");
+      const matchingColor = res.data.colors?.find((color) => color.name === requestedColor);
+      const firstColor = matchingColor?.name || res.data.colors?.find((color) => (res.data.variantStock?.length ? res.data.variantStock.some((variant) => variant.color === color.name && variant.stock > 0) : color.stock > 0))?.name || "";
       setSelectedColor(firstColor);
       setSelectedSize(firstAvailableSize(res.data, firstColor));
       setQuantity(1);
       addRecent(res.data._id);
     }).catch(() => setLoadError("This product could not be loaded. Please try again."));
     // eslint-disable-next-line
-  }, [slug]);
+  }, [slug, searchParams]);
 
   useEffect(() => {
     const ids = recent.filter((id) => id !== product?._id);
@@ -50,13 +61,41 @@ export default function ProductDetail() {
   }, [recent, product]);
 
   useEffect(() => {
+    let cancelled = false;
+
+    api.get("/homepage-content")
+      .then((res) => {
+        if (!cancelled) {
+          setHomepageContent({
+            influencerPicks: res.data.influencerPicks || [],
+            instagramPosts: res.data.instagramPosts || [],
+            reviews: res.data.reviews || [],
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load homepage social content:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!selectedColor || !product) return;
     const nextVariant = product.variantStock?.find((variant) => variant.color === selectedColor && variant.size === selectedSize);
     if (product.variantStock?.length && (!nextVariant || nextVariant.stock <= 0)) setSelectedSize(firstAvailableSize(product, selectedColor));
     setQuantity(1);
   }, [selectedColor, product]);
 
-  if (!product) return <main className="product-detail"><p>{loadError || "Loading..."}</p></main>;
+  if (!product) {
+    return (
+      <main className="product-detail product-detail-loading">
+        {loadError ? <p className="loading-error" role="alert">{loadError}</p> : <LoadingState label="Loading product details" />}
+      </main>
+    );
+  }
 
   const liked = isLiked(product._id);
   const selectedVariant = product.variantStock?.find((variant) => variant.size === selectedSize && variant.color === selectedColor);
@@ -68,10 +107,12 @@ export default function ProductDetail() {
   function selectColor(color) {
     setSelectedColor(color.name);
     setSelectedSize(firstAvailableSize(product, color.name));
-    if (color.images?.length) setActiveImg(0);
+    setActiveImg(0);
   }
 
-  const colorPhoto = product.colors?.find((color) => color.name === selectedColor)?.images?.[0];
+  const selectedColorImages = product.colors?.find((color) => color.name === selectedColor)?.images?.filter(Boolean) || [];
+  const galleryImages = selectedColorImages.length ? selectedColorImages : product.images || [];
+  const activeImage = galleryImages[activeImg] || product.images?.[0];
 
   function handleBuyNow() {
     const text = `Hi! I want to order: ${product.title} (Code: ${product.sku})\nQuantity: ${quantity}\n${selectedSize ? `Size: ${selectedSize}\n` : ""}${selectedColor ? `Color: ${selectedColor}` : ""}`;
@@ -101,18 +142,26 @@ export default function ProductDetail() {
         <div className="pd-gallery">
           <div className="pd-main-img">
             {product.soldOut && <span className="badge sold-out">SOLD OUT</span>}
-            <img src={colorPhoto || product.images[activeImg]} alt={`${product.title}${selectedColor ? ` - ${selectedColor}` : ""}`} />
+            <LoadingImage
+              key={activeImage}
+              src={activeImage}
+              fallbackSources={selectedColorImages.length ? product.images : []}
+              alt={`${product.title}${selectedColor ? ` - ${selectedColor}` : ""}`}
+              loading="eager"
+            />
           </div>
-          {product.images.length > 1 && (
+          {galleryImages.length > 1 && (
             <div className="pd-thumbs">
-              {product.images.map((img, i) => (
-                <img
+              {galleryImages.map((img, i) => (
+                <button
                   key={i}
-                  src={img}
+                  type="button"
                   className={i === activeImg ? "active" : ""}
                   onClick={() => setActiveImg(i)}
-                  alt=""
-                />
+                  aria-label={`Show product image ${i + 1}`}
+                >
+                  <LoadingImage src={img} alt="" />
+                </button>
               ))}
             </div>
           )}
@@ -128,7 +177,7 @@ export default function ProductDetail() {
               <h4>Color</h4>
               <div className="swatches">
                 {product.colors.map((c) => (
-                  <button key={c.name} type="button" className={`variant-swatch ${selectedColor === c.name ? "selected" : ""} ${c.stock <= 0 ? "unavailable" : ""}`} title={c.stock <= 0 ? `${c.name} unavailable` : c.name} onClick={() => c.stock > 0 && selectColor(c)}><span className="swatch big" style={{ background: c.hex }} /><span className="variant-name">{c.name}</span>{c.stock <= 0 && <span className="variant-cross" />}</button>
+                  <button key={c.name} type="button" className={`variant-swatch ${selectedColor === c.name ? "selected" : ""} ${c.stock <= 0 ? "unavailable" : ""}`} title={c.stock <= 0 ? `${c.name} unavailable` : c.name} aria-label={`${c.name}${c.stock <= 0 ? ", unavailable" : ""}`} aria-pressed={selectedColor === c.name} onClick={() => c.stock > 0 && selectColor(c)}><span className="swatch big" style={{ background: c.hex }} /><span className="variant-name">{c.name}</span>{c.stock <= 0 && <span className="variant-cross" />}</button>
                 ))}
               </div>
             </div>
@@ -145,8 +194,28 @@ export default function ProductDetail() {
 
           <div className="pd-actions">
             <button className="buy-now-btn large" onClick={handleBuyNow} disabled={isUnavailable || quantity > availableStock}>
-              {isUnavailable ? "OUT OF STOCK" : "BUY IT NOW"}
+              <span>{isUnavailable ? "OUT OF STOCK" : "BUY IT NOW"}</span>
+              {!isUnavailable && (
+                <span className="buy-now-payment-marks" aria-label="Payment options: Paytm, PhonePe, and Google Pay">
+                  <span className="buy-payment-icon paytm-icon"><img src="/payment-methods/paytm.png" alt="" /></span>
+                  <span className="buy-payment-icon phonepe-icon"><img src="/payment-methods/phonepe.png" alt="" /></span>
+                  <span className="buy-payment-icon gpay-icon"><img src="/payment-methods/google-pay.png" alt="" /></span>
+                </span>
+              )}
+              <ChevronRight className="buy-now-arrow" size={30} strokeWidth={2.5} aria-hidden="true" />
             </button>
+            <div className="pd-payment-options">
+              <span className="pd-payment-heading">Checkout securely with</span>
+              <div className="pd-payment-brands" aria-label="Visa, Mastercard, UPI, Paytm, Google Pay, PhonePe, and RuPay">
+                <span className="payment-brand visa-mark"><img src="/payment-methods/visa.png" alt="Visa" /></span>
+                <span className="payment-brand mastercard-mark"><img src="/payment-methods/mastercard.png" alt="Mastercard" /></span>
+                <span className="payment-brand gpay-mark"><img src="/payment-methods/google-pay.png" alt="Google Pay" /></span>
+                <span className="payment-brand upi-mark"><img src="/payment-methods/upi.png" alt="UPI" /></span>
+                <span className="payment-brand rupay-mark"><img src="/payment-methods/rupay.png" alt="RuPay" /></span>
+                <span className="payment-brand paytm-mark"><img src="/payment-methods/paytm.png" alt="Paytm" /></span>
+                <span className="payment-brand phonepe-mark"><img src="/payment-methods/phonepe.png" alt="PhonePe" /></span>
+              </div>
+            </div>
             <div className="pd-icon-row">
               <button className={`like-btn ${liked ? "liked" : ""}`} onClick={() => toggleLike(product._id)}>
                 <Heart size={16} fill={liked ? "currentColor" : "none"} /> {liked ? "Liked" : "Like"}
@@ -184,6 +253,7 @@ export default function ProductDetail() {
           </div>
         </section>
       )}
+      <HomeFeatures products={[]} content={homepageContent} showColors={false} />
     </main>
   );
 }

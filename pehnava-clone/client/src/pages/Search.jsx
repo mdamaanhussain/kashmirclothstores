@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api.js";
 import ProductCard from "../components/ProductCard.jsx";
+import { LoadingState, ProductSkeletons } from "../components/LoadingState.jsx";
 
 export default function Search() {
   const [params] = useSearchParams();
@@ -18,20 +19,19 @@ export default function Search() {
     async function loadResults() {
       const query = q.trim();
 
-      if (!query) {
-        setResults([]);
-        setSuggested([]);
-        setError("");
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       setError("");
       setResults([]);
       setSuggested([]);
 
       try {
+        if (!query) {
+          const response = await api.get("/products");
+          const allProducts = Array.isArray(response.data) ? response.data : [];
+          if (!cancelled) setResults(allProducts.slice(0, 12));
+          return;
+        }
+
         // First, fetch the actual search results.
         const searchResponse = await api.get(
           `/products?search=${encodeURIComponent(query)}`
@@ -82,13 +82,15 @@ export default function Search() {
 
   return (
     <main className="products-section">
-      <h2>Search results for "{q}"</h2>
+      <h2>{q.trim() ? `Search results for "${q}"` : "Explore products"}</h2>
 
       {loading ? (
-        <div className="search-loading" role="status" aria-live="polite">
-          <span className="search-spinner" aria-hidden="true" />
-          <span>Searching...</span>
-        </div>
+        <>
+          <LoadingState label="Finding products for you" />
+          <div className="product-row grid4 search-skeleton-grid" aria-hidden="true">
+            <ProductSkeletons count={8} />
+          </div>
+        </>
       ) : error ? (
         <p>{error}</p>
       ) : results.length > 0 ? (
@@ -114,7 +116,13 @@ export default function Search() {
         </>
       ) : (
         <div className="search-empty">
-          <p>No products are available right now.</p>
+          <p>{q.trim() ? "Try browsing a collection while we help you find the right product." : "Browse our collections to find your next look."}</p>
+          <nav className="search-collection-links" aria-label="Browse collections">
+            <Link to="/collections/trending">New Drop</Link>
+            <Link to="/collections/stitched-wear">Ready To Wear</Link>
+            <Link to="/collections/unstitched">Unstitched</Link>
+            <Link to="/">Home</Link>
+          </nav>
         </div>
       )}
     </main>

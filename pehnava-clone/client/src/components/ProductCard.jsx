@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useLikes } from "../context/LikesContext.jsx";
 import { useToast } from "./Toast.jsx";
 import { INSTAGRAM_USERNAME } from "../api.js";
+import LoadingImage from "./LoadingImage.jsx";
 import { Heart, Share2 } from "lucide-react";
 
 export default function ProductCard({ product, showBuyNow = true }) {
@@ -56,7 +57,11 @@ ${product.colors?.length
         {product.soldOut && <div className="stock-overlay"><strong>Out of stock</strong><span>Currently unavailable</span></div>}
         {product.soldOut && <span className="badge sold-out">SOLD OUT</span>}
         {!product.soldOut && product.isNew && <span className="badge new">NEW</span>}
-        <img src={product.images?.[0]} alt={product.title} loading="lazy" />
+        <LoadingImage
+          src={product.images?.[0]}
+          fallbackSources={product.images?.slice(1)}
+          alt={product.title}
+        />
         <div className="size-overlay">{sizeLabel}</div>
         <div className="card-icons">
           <button title="Share" onClick={handleShare}>
@@ -83,10 +88,12 @@ ${product.colors?.length
       {product.colors?.length > 0 && (
         <div className="swatches">
           {product.colors.map((c) => (
-            <span
+            <Link
               key={c.name}
-              className="swatch"
+              to={`/products/${product.slug}?color=${encodeURIComponent(c.name)}`}
+              className="swatch swatch-link"
               title={c.name}
+              aria-label={`View ${product.title} in ${c.name}`}
               style={{ background: c.hex }}
             />
           ))}

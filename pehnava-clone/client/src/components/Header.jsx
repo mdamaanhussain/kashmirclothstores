@@ -3,10 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { CATEGORIES } from "../categories.js";
 import { useLikes } from "../context/LikesContext.jsx";
 import { Search } from "lucide-react";
+import { api } from "../api.js";
+
+const defaultAnnouncements = [
+  "Free shipping on all orders across India",
+  "Need help with an order? WhatsApp us at 7004281547",
+  "Urgent delivery within 24 hours in Dhanbad, Asansol, Bokaro & nearby cities — order via Instagram",
+];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [announcementIndex, setAnnouncementIndex] = useState(0);
+  const [storefront, setStorefront] = useState(null);
   const { likes } = useLikes();
   const navigate = useNavigate();
 
@@ -54,23 +63,44 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  const mainLinks = CATEGORIES.filter((c) =>
-    ["trending", "stitched-wear", "save-more"].includes(c.slug)
-  );
+  const announcementMessages = storefront ? (storefront.announcements || []) : defaultAnnouncements;
+  const categories = storefront
+    ? (storefront.categories || []).filter((category) => category.active !== false)
+    : CATEGORIES;
+  const desktopOrder = ["trending", "stitched-wear", "Unstitched", "festive-wear", "luxe", "save-more"];
+  const mainLinks = categories
+    .filter((category) => category.type !== "price")
+    .sort((a, b) => {
+      const aIndex = desktopOrder.indexOf(a.slug);
+      const bIndex = desktopOrder.indexOf(b.slug);
+      return (aIndex < 0 ? desktopOrder.length : aIndex) - (bIndex < 0 ? desktopOrder.length : bIndex);
+    });
+  const budgetCategories = categories.filter((category) => category.type === "price");
+
+  useEffect(() => {
+    api.get("/storefront-settings")
+      .then(({ data }) => setStorefront(data))
+      .catch((error) => console.error("Failed to load storefront navigation settings:", error));
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (announcementMessages.length < 2) return;
+
+    const interval = window.setInterval(() => {
+      setAnnouncementIndex((index) => (index + 1) % announcementMessages.length);
+    }, 5000);
+
+    return () => window.clearInterval(interval);
+  }, [announcementMessages.length]);
 
   return (
     <header className={menuOpen ? "menu-open" : ""}>
-      <div className="announcement">
-        <div className="announcement-text">
-          <b>Free shipping</b> all orders: All over India!
-          &nbsp;&nbsp; | &nbsp;&nbsp;
-          For any order related query, contact us on WhatsApp - 7004281547
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <b>Free shipping</b> all orders: All over India!
-          &nbsp;&nbsp; | &nbsp;&nbsp;
-          For any order related query, contact us on WhatsApp - 7004281547
-        </div>
-      </div>
+      {announcementMessages.length > 0 && <div className="announcement" aria-label="Store announcements">
+        <p className="announcement-text" key={announcementIndex}>
+          {announcementMessages[announcementIndex % announcementMessages.length]}
+        </p>
+      </div>}
 
       <div className="top-header">
         <button
@@ -90,31 +120,21 @@ export default function Header() {
         </Link>
 
         <nav>
-          <Link to="/collections/trending">New DROP</Link>
-          <Link to="/collections/stitched-wear">Ready To Wear</Link>
-          <Link to="/collections/unstitched">Unstitched</Link>
+          {mainLinks.slice(0, 3).map((category) => <Link key={category.slug} to={`/collections/${category.slug}`}>{category.label}</Link>)}
 
           <div className="nav-dropdown">
             <span>By Budget</span>
 
             <div className="dropdown-menu">
-              <Link to="/collections/suits-under-1699">
-                Suits Under ₹1,699
-              </Link>
-
-              <Link to="/collections/suits-1700-3000">
-                ₹1,700 - ₹3,000
-              </Link>
-
-              <Link to="/collections/premium-suits-above-3-000">
-                Premium Suits ₹3,000+
-              </Link>
+              {budgetCategories.map((category) => (
+                <Link key={category.slug} to={`/collections/${category.slug}`}>
+                  {category.label}
+                </Link>
+              ))}
             </div>
           </div>
 
-          <Link to="/collections/festive-wear">Specials</Link>
-          <Link to="/collections/luxe">LUXE 💎</Link>
-          <Link to="/collections/save-more">Sale Deals</Link>
+          {mainLinks.slice(3).map((category) => <Link key={category.slug} to={`/collections/${category.slug}`}>{category.label}</Link>)}
         </nav>
 
         <div className="actions">
@@ -167,7 +187,7 @@ export default function Header() {
           </button>
         </div>
 
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <Link
             key={c.slug}
             to={`/collections/${c.slug}`}

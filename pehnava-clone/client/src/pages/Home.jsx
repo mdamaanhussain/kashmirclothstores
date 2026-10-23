@@ -2,45 +2,88 @@ import React, { useEffect, useRef, useState } from "react";
 import { api } from "../api.js";
 import ProductCard from "../components/ProductCard.jsx";
 import CategoryStrip from "../components/CategoryStrip.jsx";
+import HomeFeatures from "../components/HomeFeatures.jsx";
+import { ProductSkeletons } from "../components/LoadingState.jsx";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DEFAULT_HOME_CAROUSELS, getHomeCarouselProducts, getOrderedHomeCarousels } from "../utils/homeCarousels.js";
+
+function optimizeHeroImage(url, width) {
+  if (!url || !url.includes("res.cloudinary.com") || !url.includes("/image/upload/")) {
+    return url;
+  }
+
+  const uploadPath = "/image/upload/";
+  const uploadIndex = url.indexOf(uploadPath);
+  const afterUpload = url.slice(uploadIndex + uploadPath.length);
+  if (/^(?:f_[^/]+|q_[^/]+|w_\d+|c_[^/]+)\//.test(afterUpload)) return url;
+
+  return `${url.slice(0, uploadIndex + uploadPath.length)}f_auto,q_auto,w_${width},c_limit/${afterUpload}`;
+}
 
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productLoadError, setProductLoadError] = useState("");
   const [currentHero, setCurrentHero] = useState(0);
+  const [loadedHeroImages, setLoadedHeroImages] = useState([]);
+  const [homepageContent, setHomepageContent] = useState({
+    heroDesktopImages: [],
+    heroMobileImages: [],
+    categoryImages: [],
+    showroomImages: [],
+    influencerPicks: [],
+    instagramPosts: [],
+    reviews: [],
+  });
+  const [storefrontSettings, setStorefrontSettings] = useState(null);
+  const carouselRefs = useRef({});
 
-  // =========================
-  // CAROUSEL REFS
-  // =========================
-  const newDropRef = useRef(null);
-  const readyWearRef = useRef(null);
-  const unstitchedRef = useRef(null);
-  const under1699Ref = useRef(null);
-  const range1700to3000Ref = useRef(null);
-  const premium3000Ref = useRef(null);
+  useEffect(() => {
+    api.get("/storefront-settings")
+      .then(({ data }) => setStorefrontSettings(data))
+      .catch((error) => console.error("Failed to load storefront settings:", error));
+  }, []);
 
   // =========================
   // HERO IMAGES
   // =========================
   const heroImages = [
     "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788091504/Pehnava-Banner-lawns_xbl4up.webp",
-    "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788438230/ChatGPT_Image_Aug_30_2026_06_02_04_PM_u88fhz.png",
+    "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1792681376/Effortless_Elegance_Fashion_Editorial_xyyahu.png",
   ];
 
   const mobileHeroImages = [
     "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788115734/ratio-mobile-hero_siahdh.png",
     "https://res.cloudinary.com/dvnwxbqqh/image/upload/v1788115801/ratio-mobile-hero-2_qbhncd.png",
   ];
+  const desktopSlides = homepageContent.heroDesktopImages.length
+    ? homepageContent.heroDesktopImages
+    : heroImages;
+  const mobileSlides = desktopSlides.map((_, index) =>
+    homepageContent.heroMobileImages[index]
+      || (homepageContent.heroDesktopImages.length ? desktopSlides[index] : mobileHeroImages[index] || desktopSlides[index])
+  );
 
   // =========================
   // HERO IMAGE SLIDER
   // =========================
   useEffect(() => {
+    setCurrentHero((index) => index % desktopSlides.length);
+  }, [desktopSlides.length]);
+
+  useEffect(() => {
+    if (!loadedHeroImages[0]) return undefined;
+
     const interval = setInterval(() => {
-      setCurrentHero((prev) => (prev + 1) % heroImages.length);
+      setCurrentHero((prev) => {
+        const next = (prev + 1) % desktopSlides.length;
+        return loadedHeroImages[next] ? next : prev;
+      });
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, [desktopSlides.length, loadedHeroImages]);
 
   // =========================
   // GET PRODUCTS
@@ -59,8 +102,11 @@ export default function Home() {
         console.error("Failed to load products:", err);
 
         if (!cancelled) {
+          setProductLoadError("Products could not be loaded. Please refresh and try again.");
           setProducts([]);
         }
+      } finally {
+        if (!cancelled) setLoadingProducts(false);
       }
     }
 
@@ -71,75 +117,49 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    api.get("/homepage-content")
+      .then((res) => {
+        if (!cancelled) {
+          setHomepageContent({
+            heroDesktopImages: res.data.heroDesktopImages || [],
+            heroMobileImages: res.data.heroMobileImages || [],
+            categoryImages: res.data.categoryImages || [],
+            showroomImages: res.data.showroomImages || [],
+            influencerPicks: res.data.influencerPicks || [],
+            instagramPosts: res.data.instagramPosts || [],
+            reviews: res.data.reviews || [],
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load homepage content:", err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // =========================
   // GENERIC CAROUSEL SCROLL
   // =========================
-  const scrollCarousel = (ref, direction) => {
-    if (!ref.current) return;
-
-    ref.current.scrollBy({
-      left: direction * ref.current.clientWidth,
+  const scrollCarousel = (element, direction) => {
+    if (!element) return;
+    element.scrollBy({
+      left: direction * element.clientWidth,
       behavior: "smooth",
     });
   };
 
-  const scrollNewDrop = (direction) =>
-    scrollCarousel(newDropRef, direction);
-
-  const scrollReadyWear = (direction) =>
-    scrollCarousel(readyWearRef, direction);
-
-  const scrollUnstitched = (direction) =>
-    scrollCarousel(unstitchedRef, direction);
-
-  const scrollUnder1699 = (direction) =>
-    scrollCarousel(under1699Ref, direction);
-
-  const scroll1700to3000 = (direction) =>
-    scrollCarousel(range1700to3000Ref, direction);
-
-  const scrollPremium3000 = (direction) =>
-    scrollCarousel(premium3000Ref, direction);
-
-  // =========================
-  // PRODUCT FILTERS
-  // =========================
-
-  // Unstitched products are category based.
-  // Supports both common slug variants.
-  const unstitchedProducts = products
-    .filter((p) =>
-      Array.isArray(p.categories) &&
-      p.categories.some((category) =>
-        ["unstitched", "unstitched-wear"].includes(
-          String(category).toLowerCase()
-        )
-      )
-    )
-    .slice(0, 10);
-
-  // Budget sections are intentionally price based.
-  // This avoids depending on a separate budget category slug.
-  const under1699Products = products
-    .filter((p) => {
-      const price = Number(p.price);
-      return Number.isFinite(price) && price > 0 && price <= 1699;
-    })
-    .slice(0, 10);
-
-  const range1700to3000Products = products
-    .filter((p) => {
-      const price = Number(p.price);
-      return Number.isFinite(price) && price >= 1700 && price <= 3000;
-    })
-    .slice(0, 10);
-
-  const premium3000Products = products
-    .filter((p) => {
-      const price = Number(p.price);
-      return Number.isFinite(price) && price > 3000;
-    })
-    .slice(0, 10);
+  function renderProducts(items) {
+    if (loadingProducts) return <ProductSkeletons count={5} />;
+    return items.map((product) => (
+      <ProductCard key={product._id} product={product} showBuyNow={false} />
+    ));
+  }
 
   return (
     <main>
@@ -147,292 +167,85 @@ export default function Home() {
           HERO
       ========================= */}
       <section className="hero">
-        <picture>
-          <source
-            media="(max-width: 600px)"
-            srcSet={mobileHeroImages[currentHero]}
-          />
-
-          <img
-            key={currentHero}
-            className="hero-img"
-            src={heroImages[currentHero]}
-            alt="Kashmir Cloth Stores"
-          />
-        </picture>
-
-        <div className="hero-overlay"></div>
+        <Link
+          to="/collections/trending"
+          className="hero-link"
+          aria-label="Shop the New Drop"
+        >
+          {desktopSlides.map((image, index) => (
+            <picture
+              className={`hero-slide${index === currentHero ? " is-active" : ""}${loadedHeroImages[index] ? " is-image-ready" : ""}`}
+              key={image}
+              aria-hidden={index !== currentHero}
+            >
+              <source
+                media="(max-width: 600px)"
+                srcSet={optimizeHeroImage(mobileSlides[index] || image, 900)}
+              />
+              <img
+                className="hero-img"
+                src={optimizeHeroImage(image, 1920)}
+                alt={index === currentHero ? "Shop the New Drop" : ""}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === currentHero ? "high" : "low"}
+                decoding="async"
+                onLoad={() => setLoadedHeroImages((loaded) => {
+                  const next = [...loaded];
+                  next[index] = true;
+                  return next;
+                })}
+              />
+            </picture>
+          ))}
+        </Link>
       </section>
-
-      {/* =========================
-          NEW DROP
-      ========================= */}
-      <section className="products-section">
-        <div className="section-head">
-          <h2>New Drop</h2>
-
-          <Link to="/collections/trending">
-            View all
-          </Link>
-        </div>
-
-        <div className="product-carousel">
-          <button
-            type="button"
-            className="carousel-arrow carousel-left"
-            onClick={() => scrollNewDrop(-1)}
-            aria-label="Previous New Drop products"
-          >
-            ←
-          </button>
-
-          <div className="product-row" ref={newDropRef}>
-            {products
-              .slice(0, 10)
-              .map((p) => (
-                <ProductCard
-                  key={p._id}
-                  product={p}
-                  showBuyNow={false}
-                />
-              ))}
-          </div>
-
-          <button
-            type="button"
-            className="carousel-arrow carousel-right"
-            onClick={() => scrollNewDrop(1)}
-            aria-label="Next New Drop products"
-          >
-            →
-          </button>
-        </div>
-      </section>
+      {productLoadError && <p className="loading-error home-load-error" role="alert">{productLoadError}</p>}
 
       {/* =========================
           OUR CATEGORY
       ========================= */}
-      <CategoryStrip />
+      <CategoryStrip categoryImages={homepageContent.categoryImages} categories={storefrontSettings ? storefrontSettings.categories || [] : null} />
 
-      {/* =========================
-          READY TO WEAR
-      ========================= */}
-      <section className="products-section">
-        <div className="section-head">
-          <h2>Ready To Wear</h2>
+      {getOrderedHomeCarousels(storefrontSettings?.homeCarousels || DEFAULT_HOME_CAROUSELS)
+        .map((section) => {
+          const sectionProducts = getHomeCarouselProducts(products, section);
+          const sectionTitle = section.title || "Featured products";
+          return (
+            <section className="products-section" key={section.id}>
+              <div className="section-head">
+                <h2>{sectionTitle}</h2>
+                {section.collectionSlug && <Link to={`/collections/${section.collectionSlug}`}>View all</Link>}
+              </div>
+              <div className="product-carousel">
+                <button
+                  type="button"
+                  className="carousel-arrow carousel-left"
+                  onClick={() => scrollCarousel(carouselRefs.current[section.id], -1)}
+                  aria-label={`Previous ${sectionTitle} products`}
+                >
+                  <ChevronLeft size={21} strokeWidth={2} aria-hidden="true" />
+                </button>
+                <div
+                  className="product-row"
+                  ref={(element) => { carouselRefs.current[section.id] = element; }}
+                  aria-busy={loadingProducts}
+                >
+                  {renderProducts(sectionProducts)}
+                </div>
+                <button
+                  type="button"
+                  className="carousel-arrow carousel-right"
+                  onClick={() => scrollCarousel(carouselRefs.current[section.id], 1)}
+                  aria-label={`Next ${sectionTitle} products`}
+                >
+                  <ChevronRight size={21} strokeWidth={2} aria-hidden="true" />
+                </button>
+              </div>
+            </section>
+          );
+        })}
 
-          <Link to="/collections/stitched-wear">
-            View all
-          </Link>
-        </div>
-
-        <div className="product-carousel">
-          <button
-            type="button"
-            className="carousel-arrow carousel-left"
-            onClick={() => scrollReadyWear(-1)}
-            aria-label="Previous Ready To Wear products"
-          >
-            ←
-          </button>
-
-          <div className="product-row" ref={readyWearRef}>
-            {products
-              .filter((p) =>
-                p.categories?.includes("ready-to-wear")
-              )
-              .slice(0, 10)
-              .map((p) => (
-                <ProductCard
-                  key={p._id}
-                  product={p}
-                  showBuyNow={false}
-                />
-              ))}
-          </div>
-
-          <button
-            type="button"
-            className="carousel-arrow carousel-right"
-            onClick={() => scrollReadyWear(1)}
-            aria-label="Next Ready To Wear products"
-          >
-            →
-          </button>
-        </div>
-      </section>
-
-      {/* =========================
-          UNSTITCHED
-      ========================= */}
-      <section className="products-section">
-        <div className="section-head">
-          <h2>Unstitched</h2>
-
-          <Link to="/collections/unstitched">
-            View all
-          </Link>
-        </div>
-
-        <div className="product-carousel">
-          <button
-            type="button"
-            className="carousel-arrow carousel-left"
-            onClick={() => scrollUnstitched(-1)}
-            aria-label="Previous Unstitched products"
-          >
-            ←
-          </button>
-
-          <div className="product-row" ref={unstitchedRef}>
-            {unstitchedProducts.map((p) => (
-              <ProductCard
-                key={p._id}
-                product={p}
-                showBuyNow={false}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="carousel-arrow carousel-right"
-            onClick={() => scrollUnstitched(1)}
-            aria-label="Next Unstitched products"
-          >
-            →
-          </button>
-        </div>
-      </section>
-
-      {/* =========================
-          SUITS UNDER ₹1,699
-      ========================= */}
-      <section className="products-section">
-        <div className="section-head">
-          <h2>Suits Under ₹1,699</h2>
-
-          <Link to="/collections/suits-under-1699">
-            View all
-          </Link>
-        </div>
-
-        <div className="product-carousel">
-          <button
-            type="button"
-            className="carousel-arrow carousel-left"
-            onClick={() => scrollUnder1699(-1)}
-            aria-label="Previous suits under 1699"
-          >
-            ←
-          </button>
-
-          <div className="product-row" ref={under1699Ref}>
-            {under1699Products.map((p) => (
-              <ProductCard
-                key={p._id}
-                product={p}
-                showBuyNow={false}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="carousel-arrow carousel-right"
-            onClick={() => scrollUnder1699(1)}
-            aria-label="Next suits under 1699"
-          >
-            →
-          </button>
-        </div>
-      </section>
-
-      {/* =========================
-          ₹1,700 - ₹3,000
-      ========================= */}
-      <section className="products-section">
-        <div className="section-head">
-          <h2>₹1,700 - ₹3,000</h2>
-
-          <Link to="/collections/suits-1700-3000">
-            View all
-          </Link>
-        </div>
-
-        <div className="product-carousel">
-          <button
-            type="button"
-            className="carousel-arrow carousel-left"
-            onClick={() => scroll1700to3000(-1)}
-            aria-label="Previous products from 1700 to 3000"
-          >
-            ←
-          </button>
-
-          <div className="product-row" ref={range1700to3000Ref}>
-            {range1700to3000Products.map((p) => (
-              <ProductCard
-                key={p._id}
-                product={p}
-                showBuyNow={false}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="carousel-arrow carousel-right"
-            onClick={() => scroll1700to3000(1)}
-            aria-label="Next products from 1700 to 3000"
-          >
-            →
-          </button>
-        </div>
-      </section>
-
-      {/* =========================
-          PREMIUM SUITS ₹3,000+
-      ========================= */}
-      <section className="products-section">
-        <div className="section-head">
-          <h2>Premium Suits ₹3,000+</h2>
-
-          <Link to="/collections/premium-suits-above-3-000">
-            View all
-          </Link>
-        </div>
-
-        <div className="product-carousel">
-          <button
-            type="button"
-            className="carousel-arrow carousel-left"
-            onClick={() => scrollPremium3000(-1)}
-            aria-label="Previous premium suits"
-          >
-            ←
-          </button>
-
-          <div className="product-row" ref={premium3000Ref}>
-            {premium3000Products.map((p) => (
-              <ProductCard
-                key={p._id}
-                product={p}
-                showBuyNow={false}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="carousel-arrow carousel-right"
-            onClick={() => scrollPremium3000(1)}
-            aria-label="Next premium suits"
-          >
-            →
-          </button>
-        </div>
-      </section>
+      <HomeFeatures products={products} content={homepageContent} storefrontSettings={storefrontSettings} showShowroom />
     </main>
   );
 }

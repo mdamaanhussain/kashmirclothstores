@@ -7,6 +7,8 @@ import adminRoutes from "./routes/admin.js";
 import customerRoutes from "./routes/customers.js";
 import orderRoutes from "./routes/orders.js";
 import paymentRoutes from "./routes/payments.js";
+import homepageContentRoutes from "./routes/homepageContent.js";
+import storefrontSettingsRoutes from "./routes/storefrontSettings.js";
 import Customer from "./models/Customer.js";
 
 dotenv.config();
@@ -19,7 +21,7 @@ if (!process.env.MONGODB_URI || !process.env.JWT_SECRET || !process.env.ADMIN_PA
 const app = express();
 app.disable("x-powered-by");
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' data: https:; connect-src 'self' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'");
+  res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' data: https:; media-src 'self' https:; connect-src 'self' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'");
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   next();
@@ -41,6 +43,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/homepage-content", homepageContentRoutes);
+app.use("/api", storefrontSettingsRoutes);
 
 app.get("/", (req, res) => res.send("Kashmir Cloth Stores API is running"));
 

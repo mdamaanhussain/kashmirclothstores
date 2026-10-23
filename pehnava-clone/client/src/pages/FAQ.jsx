@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const faqs = [
   {
     question: "Where do you ship from?",
-    answer: "We are shipping from India.",
+    answer: "We are shipping from Bokaro Jharkhand.",
   },
   {
     question: "When my product will be delivered?",
@@ -13,9 +13,23 @@ const faqs = [
         <br /><br />
         Free Shipping on all orders within India.
         <br /><br />
-        Kerala: 3-4 Days for ready stock.
+        Delivery time varies based on your location and product availability.
+         <br /><br />
+      <b>For urgent needs,</b> 24-hour delivery is available in Dhanbad, Asansol, Bokaro, Jamshedpur, and Ranchi. However, parcels must be picked up from the bus stand.
+        <br /><br />
+        <b>Free Home Delivery time for ready stock:</b>
+       <br /><br />
+        Bermo: 24 Hours for ready stock.
         <br />
-        Other Indian States: 4-7 days.
+        Dhanbad: 1-3 Days for ready stock.
+        <br />
+        Asansol: 1-3 Days for ready stock.
+        <br />
+        Ranchi: 1-3 Days for ready stock.
+        <br />
+        Other Jharkhand Cities: 3-7 Days for ready stock.
+        <br />
+        Other Indian States: 5-7 days.
         <br />
         International: 10-14 days.
         <br />

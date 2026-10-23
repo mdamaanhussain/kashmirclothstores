@@ -1,23 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { api } from "../api.js";
 
 export default function Contact() {
+  const [contact, setContact] = useState({});
+  useEffect(() => {
+    api.get("/storefront-settings")
+      .then(({ data }) => setContact(data.contact || {}))
+      .catch((error) => console.error("Failed to load contact settings:", error));
+  }, []);
+  const whatsapp = contact.whatsapp || "7004281547";
+  const email = contact.email || "kashmir.clothstores04@gmail.com";
+  const instagram = contact.instagram || "https://www.instagram.com/kashmirclothstores/";
+
   return (
     <main className="contact-page">
       <div className="contact-container">
 
         <div className="contact-header">
-          <h1>Contact Us</h1>
-          <p>
-            Have a question about our products or your order?
-            We're happy to help. Get in touch with us.
-          </p>
+          <h1>{contact.heading || "Contact Us"}</h1>
+          <p>{contact.intro || "Have a question about our products or your order? We're happy to help. Get in touch with us."}</p>
         </div>
 
         <div className="contact-cards">
 
           {/* WhatsApp */}
           <a
-            href="https://wa.me/917004281547"
+            href={`https://wa.me/91${whatsapp.replace(/\D/g, "")}`}
             target="_blank"
             rel="noreferrer"
             className="contact-card"
@@ -37,7 +45,7 @@ export default function Contact() {
 
             <div className="contact-card-content">
               <h3>WhatsApp</h3>
-              <p>7004281547</p>
+              <p>{whatsapp}</p>
               <span>Chat with us →</span>
             </div>
           </a>
@@ -45,7 +53,7 @@ export default function Contact() {
 
           {/* Email */}
           <a
-            href="mailto:amaanhussain786pr@gmail.com"
+            href={`mailto:${email}`}
             className="contact-card"
           >
             <div className="contact-icon email-icon">
@@ -71,7 +79,7 @@ export default function Contact() {
 
             <div className="contact-card-content">
               <h3>Email</h3>
-              <p>kashmir.clothstores04@gmail.com</p>
+              <p>{email}</p>
               <span>Send us an email →</span>
             </div>
           </a>
@@ -79,7 +87,7 @@ export default function Contact() {
 
           {/* Instagram */}
           <a
-            href="https://www.instagram.com/kashmirclothstores/"
+            href={instagram}
             target="_blank"
             rel="noreferrer"
             className="contact-card"
@@ -113,7 +121,7 @@ export default function Contact() {
 
             <div className="contact-card-content">
               <h3>Instagram</h3>
-              <p>@kashmirclothstores</p>
+              <p>{instagram.replace(/^https?:\/\/(www\.)?instagram\.com\/?/i, "@").replace(/\/$/, "")}</p>
               <span>Follow us →</span>
             </div>
           </a>
@@ -122,11 +130,8 @@ export default function Contact() {
 
 
         <div className="contact-bottom">
-          <h2>We're Here To Help</h2>
-          <p>
-            For product enquiries, order related questions, availability,
-            sizes or any other assistance, feel free to contact us.
-          </p>
+          <h2>{contact.helpHeading || "We're Here To Help"}</h2>
+          <p>{contact.helpText || "For product enquiries, order related questions, availability, sizes or any other assistance, feel free to contact us."}</p>
         </div>
 
       </div>

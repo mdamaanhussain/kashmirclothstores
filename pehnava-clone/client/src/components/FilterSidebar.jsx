@@ -9,7 +9,9 @@ export default function FilterSidebar({
   category,
   mobileOpen,
   onClose,
+  categories,
 }) {
+  const hasActiveFilters = Boolean(filters.minPrice || filters.maxPrice || filters.color || filters.dupatta);
   const colors = useMemo(() => {
     const map = new Map();
 
@@ -61,11 +63,20 @@ export default function FilterSidebar({
 
   {/* SCROLLABLE BODY — yeh wrapper add karo */}
   <div className="filter-scroll-body">
+    {hasActiveFilters && (
+      <button
+        type="button"
+        className="clear-filters-inline"
+        onClick={() => setFilters({ minPrice: "", maxPrice: "", color: "", dupatta: "" })}
+      >
+        Clear all filters
+      </button>
+    )}
 
     {/* CATEGORIES */}
     <div className="filter-block">
       <h4>CATEGORIES</h4>
-      {CATEGORIES.map((c) => (
+      {(categories || CATEGORIES).map((c) => (
         <Link
           key={c.slug}
           to={`/collections/${c.slug}`}
@@ -106,12 +117,15 @@ export default function FilterSidebar({
         <h4>COLOR</h4>
         <div className="color-palette">
           {colors.map(([name, hex]) => (
-            <span
-              key={name}
-              title={name}
-              onClick={() => toggleColor(name)}
-              className={`swatch big ${filters.color === name ? "selected" : ""}`}
-              style={{ background: hex }}
+            <button
+            type="button"
+            key={name}
+            title={name}
+            aria-label={`Filter by ${name}`}
+            aria-pressed={filters.color === name}
+            onClick={() => toggleColor(name)}
+            className={`swatch big ${filters.color === name ? "selected" : ""}`}
+            style={{ background: hex }}
             />
           ))}
         </div>

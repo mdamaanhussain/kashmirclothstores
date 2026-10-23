@@ -1,8 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CATEGORIES } from "../categories.js";
+import { api } from "../api.js";
 
 export default function Footer() {
+  const [storefront, setStorefront] = useState(null);
+  useEffect(() => {
+    api.get("/storefront-settings")
+      .then(({ data }) => setStorefront(data))
+      .catch((error) => console.error("Failed to load storefront footer settings:", error));
+  }, []);
+  const categories = storefront
+    ? (storefront.categories || []).filter((category) => category.active !== false && category.type !== "price")
+    : CATEGORIES;
+  const footer = storefront?.footer || {};
+  const description = footer.description ?? "Beautiful Sarees, Lehenga, stitched & unstitched Suits for Women. Shirting & Suiting, Coat-Pant, Kurta and Sherwani Fabrics for Men.";
+  const address = footer.address ?? "Main Road Phusro Bazar, Bokaro, Jharkhand, India";
+  const instagramUrl = footer.instagramUrl || "https://www.instagram.com/kashmirclothstores/";
+
   return (
     <footer>
       {/* BRAND */}
@@ -12,9 +27,8 @@ export default function Footer() {
           <small>CLOTH STORES</small>
         </div>
 
-        <p>
-          Beautiful stitched & unstitched lawn suits for women.
-        </p>
+        <p className="footer-description">{description}</p>
+        <p><b>Address:</b> {address}</p>
 
       </div>
 
@@ -22,7 +36,7 @@ export default function Footer() {
       <div>
         <h4>SHOP</h4>
 
-        {CATEGORIES.slice(0, 4).map((c) => (
+        {categories.slice(0, 4).map((c) => (
           <Link
             key={c.slug}
             to={`/collections/${c.slug}`}
@@ -67,12 +81,17 @@ export default function Footer() {
         <h4>FOLLOW</h4>
 
         <a
-          href="https://www.instagram.com/kashmirclothstores/"
+          href={instagramUrl}
           target="_blank"
           rel="noreferrer"
         >
           Instagram
         </a>
+        {(footer.links || []).map((link, index) => (
+          /^https?:\/\//i.test(link.url)
+            ? <a key={`${link.url}-${index}`} href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
+            : <Link key={`${link.url}-${index}`} to={link.url}>{link.label}</Link>
+        ))}
       </div>
     </footer>
   );
